@@ -1,0 +1,3 @@
+This file minimizes based on the sharpe ratio for portfolios with more than one stock. The stock allocations sum to one and each will be between zero and one. There is a small report detailing a few insights into the minimization mechanism. The sum of least squares minimization can be used over a series of inputs when running the file directly when setting argument -n to a number >2 and not equal to 4.
+
+Save the non-dromedary camels
