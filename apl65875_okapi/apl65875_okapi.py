@@ -7,7 +7,14 @@ from contributed_traders.util import get_file
 
 class apl65875_okapi(TradingAgent):
     """
-    Simple Trading Agent that compares the past mid-price observations and places a
+    # Author: Arthur LeBlanc
+    # Agent Name: okapi
+    # Other Names: Optimistic_Simple_Agent
+    #
+    # The author of this code hereby permits it to be included as a part of the ABIDES distribution, 
+    # and for it to be released under any open source license the ABIDES authors choose to release ABIDES under.
+    
+    Improved Simple Trading Agent that compares the past mid-price observations and places a
     buy limit order if the first window mid-price exponential average >= the second window mid-price exponential average or a
     sell limit order if the first window mid-price exponential average < the second window mid-price exponential average
     """
