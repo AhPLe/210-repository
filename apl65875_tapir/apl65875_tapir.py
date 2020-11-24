@@ -6,9 +6,14 @@ from contributed_traders.util import get_file
 
 class apl65875_tapir(TradingAgent):
     """
-    apl65875 tapir based on the Simple Trading Agent that compares the past mid-price observations and places a
-    buy limit order if the first window mid-price exponential average >= the second window mid-price exponential average or a
-    sell limit order if the first window mid-price exponential average < the second window mid-price exponential average
+     # Author: Arthur LeBlanc
+    # Agent Name: tapir
+    # Other Names: Bollinger_Simple_Agent
+    #
+    # The author of this code hereby permits it to be included as a part of the ABIDES distribution, 
+    # and for it to be released under any open source license the ABIDES authors choose to release ABIDES under.
+    
+    apl65875 tapir modifies Simple Trading Agent to use Bollinger Bands. The bands can be modified by changing a value in the __init__ of this file.
     """
 
     def __init__(self, id, name, type, symbol, starting_cash,
