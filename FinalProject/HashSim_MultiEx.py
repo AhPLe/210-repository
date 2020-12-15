@@ -30,6 +30,7 @@ class State(ev_exec.Executive.Event_Enum, enum.Enum):
     Infectious = 4
     Recovered = 5
     Dead = 6
+    Vaccinated = 7
 
     def name(self) -> str:
         if(self.value == 1):
@@ -44,6 +45,8 @@ class State(ev_exec.Executive.Event_Enum, enum.Enum):
             return 'Recovered'
         elif(self.value == 6):
             return 'Dead'
+        elif(self.value == 7):
+            return 'Vaccinated'
         else:
             return 'not a State'  # with explicitly defined states, this shouldn't happen
 
@@ -55,6 +58,7 @@ class MYAgent_LP(MYSim_LP.MYSim_LP):
 
     r0 = 1.5
     infected = 0.05
+    vaccinated = 0.05
     length_time = 4
     sick = 0.2
     use_area = False
@@ -87,6 +91,7 @@ class MYAgent_LP(MYSim_LP.MYSim_LP):
         self.msg_history.append((transmit_id, time, state))
         temp_state = self.state
         self.time = time
+
         if transmit_id == self.id and self.state == state and self.infected_time > 0:
             self.InfectionCycle(self.infected_time)
         else:
@@ -234,8 +239,11 @@ def MYSimInitApplication(time_set=None, randstate = None):  # int argc, char ** 
                         default=False)  # percent that die once sick
     parser.add_argument('-switch', action="store", dest="switch",
                         default=0.01, type=float)  # percent that switch executives
+    parser.add_argument('-dvacc', action="store", dest="dvacc",
+                        default=0.1,	type=float)  # percent that are vaccinated
     
-    parser.add_argument('-iplot', action="store_true", dest="iplot")  # percent that switch executives
+    
+    parser.add_argument('-iplot', action="store_true", dest="iplot")  # shows the attempt at individual plots
     
     # dr0 = 1.5 for concentration of 50 people per area (default area is 20 units)
     #dinfected = 0.05
@@ -266,8 +274,8 @@ def MYSimInitApplication(time_set=None, randstate = None):  # int argc, char ** 
                         default=True)
     parser.add_argument('-k', action="store", dest="lim_Latency",
                         default=1,   type=int)
-    parser.add_argument('-v', action="store_false",
-                        dest="VERBOSE", default=True)
+    parser.add_argument('-v', action="store_true",
+                        dest="VERBOSE", default=False)
     parser.add_argument('-p', action="store",
                         dest="processes", default=2,   type=int)
     parser.add_argument('-x', action="store", dest="num_executives",
@@ -284,6 +292,8 @@ def MYSimInitApplication(time_set=None, randstate = None):  # int argc, char ** 
     
     MYAgent_LP.r0 = args.dr0  # set the 'global class variables' for each parameter
     MYAgent_LP.infected = args.dinfected
+    MYAgent_LP.vaccinated = args.dvacc
+    
     MYAgent_LP.length_time = args.dlength_time
     MYAgent_LP.sick = args.dsick
     MYAgent_LP.dead = args.ddead
@@ -330,6 +340,10 @@ def MYSimInitApplication(time_set=None, randstate = None):  # int argc, char ** 
         if ex_arr[0].Get_VERBOSE():
             print('starting infections')
         new_infected = math.ceil(MYAgent_LP.infected*total)
+        new_vacc= math.floor(MYAgent_LP.vaccinated*total)
+        if new_infected+new_vacc > total:
+            new_vacc = total - new_infected
+            print('overriding infected with vaccinations')
         #print('list')
         #print(LPList_Initial)
         #print('number infected: {}'.format(MYAgent_LP.infected))
@@ -338,15 +352,28 @@ def MYSimInitApplication(time_set=None, randstate = None):  # int argc, char ** 
         item_iter = iter(LPList_Initial)
         item = [None, None]
         # count = 0
-        for i in range(new_infected):
+        nomore = False
+        for i in range(new_vacc):
             try: 
                 item = next(item_iter)
             except StopIteration:
-                print('iteratin was stopped, something probably went wrong')
-
+                print('iteration was stopped, something probably went wrong')
+                nomore = True
                 break #nothing else to infect, file should stop
             
-            item[1].InitializeInfection()
+            item[1].state = State(7)
+        if not nomore:
+            for i in range(new_infected):
+                try: 
+                    item = next(item_iter)
+                except StopIteration:
+                    print('iteration was stopped, something probably went wrong')
+                    
+                    break #nothing else to infect, file should stop
+                
+                item[1].InitializeInfection()
+        
+            
     
     LP_arr_List_Initial = []
     for i in range (num_executives):
