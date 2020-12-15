@@ -36,4 +36,4 @@ There is a seed feature, which is improved but still not successful using the ha
     parser.add_argument('-x', action="store", dest="num_executives",
                         default=1,	type=int)
 
-This is the full list of arguments. The new ones to note are -x, which implements more than one executive, -iplot which shows the attempt at an individual plot, use-area which allows the simplistic area feature to be turned on or off, and possibly -ddead which creates a percentage of sick agents into dead agents and removes them from the executive.
+This is the full list of arguments. The new ones to note are -x, which implements more than one executive, -iplot which shows the attempt at an individual plot, use-area which allows the simplistic area feature to be turned on or off, and possibly -ddead which creates a percentage of sick agents into dead agents and removes them from the executive. While -s, the whole point of the multiple executives does do something, it does not work and expands the population of agents.
